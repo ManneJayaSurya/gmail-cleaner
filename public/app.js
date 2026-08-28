@@ -22,11 +22,11 @@ function render(data) {
     <div><strong>${(data.totalEmails ?? 0).toLocaleString()}</strong><small>Total emails</small></div>
     <div><strong>${(data.unreadEmails ?? 0).toLocaleString()}</strong><small>Unread</small></div>`;
   $('senders').innerHTML = senders.map(({ sender, count }) => `
-    <button class="card" data-sender="${escapeHtml(sender)}" type="button">
+    <button class="card" data-sender="${encodeURIComponent(sender)}" type="button">
       <b>${escapeHtml(sender)}</b><span>${(count ?? 0).toLocaleString()} emails</span>
     </button>`).join('');
   const maxCategory = Math.max(1, ...categories.map(({ count = 0 }) => count));
-  $('categories').innerHTML = categories.map(({ name, count }) => `
+  $('categories').innerHTML = categories.map(({ name, count = 0 }) => `
     <div class="category"><b>${escapeHtml(name)}</b><div class="bar"><i style="width:${count / maxCategory * 100}%"></i></div><span>${count.toLocaleString()}</span></div>`).join('');
   $('stats').innerHTML = [
     ['With attachments', stats.withAttachments ?? 0],
@@ -51,7 +51,7 @@ $('refresh').addEventListener('click', load);
 $('senders').addEventListener('click', async (event) => {
   const button = event.target.closest('[data-sender]');
   if (!button) return;
-  const sender = button.dataset.sender;
+  const sender = decodeURIComponent(button.dataset.sender);
   try {
     const response = await fetch(`/api/sender/${encodeURIComponent(sender)}`);
     if (!response.ok) throw new Error('Could not load sender emails');
