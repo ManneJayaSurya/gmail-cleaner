@@ -51,7 +51,7 @@ $('senders').addEventListener('click', async (event) => {
     const response = await fetch(`/api/sender/${encodeURIComponent(sender)}`);
     if (!response.ok) throw new Error('Could not load sender emails');
     const data = await response.json();
-    showToast(`${data.totalCount.toLocaleString()} emails from ${sender}`);
+    showToast(`${(data.totalCount ?? 0).toLocaleString()} emails from ${sender}`);
   } catch { showToast('Could not load sender emails'); }
 });
 
