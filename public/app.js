@@ -57,7 +57,7 @@ $('senders').addEventListener('click', async (event) => {
     if (!response.ok) throw new Error('Could not load sender emails');
     const data = await response.json();
     showToast(`${(data.totalCount ?? 0).toLocaleString()} emails from ${sender}`);
-  } catch { showToast('Could not load sender emails'); }
+  } catch (error) { showToast(error.message || 'Could not load sender emails'); }
 });
 
 load();
