@@ -2,6 +2,11 @@ const $ = (id) => document.getElementById(id);
 const escapeHtml = (value) => String(value).replace(/[&<>"']/g, (char) => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
 }[char]));
+const showToast = (message) => {
+  $('toast').textContent = message;
+  $('toast').classList.add('show');
+  setTimeout(() => $('toast').classList.remove('show'), 2500);
+};
 
 async function getDashboard() {
   const response = await fetch('/api/dashboard');
@@ -17,7 +22,7 @@ function render(data) {
     <button class="card" data-sender="${escapeHtml(sender)}" type="button">
       <b>${escapeHtml(sender)}</b><span>${count.toLocaleString()} emails</span>
     </button>`).join('');
-  const maxCategory = Math.max(...data.categories.map(({ count }) => count));
+  const maxCategory = Math.max(1, ...data.categories.map(({ count }) => count));
   $('categories').innerHTML = data.categories.map(({ name, count }) => `
     <div class="category"><b>${escapeHtml(name)}</b><div class="bar"><i style="width:${count / maxCategory * 100}%"></i></div><span>${count.toLocaleString()}</span></div>`).join('');
   $('stats').innerHTML = [
@@ -43,14 +48,8 @@ $('senders').addEventListener('click', async (event) => {
     const response = await fetch(`/api/sender/${encodeURIComponent(sender)}`);
     if (!response.ok) throw new Error('Could not load sender emails');
     const data = await response.json();
-    $('toast').textContent = `${data.totalCount.toLocaleString()} emails from ${sender}`;
-    $('toast').classList.add('show');
-    setTimeout(() => $('toast').classList.remove('show'), 2500);
-  } catch {
-    $('toast').textContent = 'Could not load sender emails';
-    $('toast').classList.add('show');
-    setTimeout(() => $('toast').classList.remove('show'), 2500);
-  }
+    showToast(`${data.totalCount.toLocaleString()} emails from ${sender}`);
+  } catch { showToast('Could not load sender emails'); }
 });
 
 load();
