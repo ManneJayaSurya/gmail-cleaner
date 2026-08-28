@@ -23,7 +23,7 @@ function render(data) {
     <div><strong>${(data.unreadEmails ?? 0).toLocaleString()}</strong><small>Unread</small></div>`;
   $('senders').innerHTML = senders.map(({ sender, count }) => `
     <button class="card" data-sender="${escapeHtml(sender)}" type="button">
-      <b>${escapeHtml(sender)}</b><span>${count.toLocaleString()} emails</span>
+      <b>${escapeHtml(sender)}</b><span>${(count ?? 0).toLocaleString()} emails</span>
     </button>`).join('');
   const maxCategory = Math.max(1, ...categories.map(({ count = 0 }) => count));
   $('categories').innerHTML = categories.map(({ name, count }) => `
@@ -39,7 +39,12 @@ function render(data) {
 async function load() {
   $('summary').innerHTML = '<div class="loading">Loading your inbox…</div>';
   try { render(await getDashboard()); }
-  catch (error) { $('summary').innerHTML = `<div class="loading">${escapeHtml(error.message)}</div>`; }
+  catch (error) {
+    $('summary').innerHTML = `<div class="loading">${escapeHtml(error.message)}</div>`;
+    $('senders').innerHTML = '';
+    $('categories').innerHTML = '';
+    $('stats').innerHTML = '';
+  }
 }
 
 $('refresh').addEventListener('click', load);
