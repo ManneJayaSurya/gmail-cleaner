@@ -15,21 +15,24 @@ async function getDashboard() {
 }
 
 function render(data) {
+  const senders = data.topSenders ?? [];
+  const categories = data.categories ?? [];
+  const stats = data.stats ?? {};
   $('summary').innerHTML = `
     <div><strong>${data.totalEmails.toLocaleString()}</strong><small>Total emails</small></div>
     <div><strong>${data.unreadEmails.toLocaleString()}</strong><small>Unread</small></div>`;
-  $('senders').innerHTML = data.topSenders.map(({ sender, count }) => `
+  $('senders').innerHTML = senders.map(({ sender, count }) => `
     <button class="card" data-sender="${escapeHtml(sender)}" type="button">
       <b>${escapeHtml(sender)}</b><span>${count.toLocaleString()} emails</span>
     </button>`).join('');
-  const maxCategory = Math.max(1, ...data.categories.map(({ count }) => count));
-  $('categories').innerHTML = data.categories.map(({ name, count }) => `
+  const maxCategory = Math.max(1, ...categories.map(({ count }) => count));
+  $('categories').innerHTML = categories.map(({ name, count }) => `
     <div class="category"><b>${escapeHtml(name)}</b><div class="bar"><i style="width:${count / maxCategory * 100}%"></i></div><span>${count.toLocaleString()}</span></div>`).join('');
   $('stats').innerHTML = [
-    ['With attachments', data.stats.withAttachments],
-    ['Older than 30 days', data.stats.olderThan30Days],
-    ['Older than 90 days', data.stats.olderThan90Days],
-    ['Large emails', data.stats.largeEmails]
+    ['With attachments', stats.withAttachments ?? 0],
+    ['Older than 30 days', stats.olderThan30Days ?? 0],
+    ['Older than 90 days', stats.olderThan90Days ?? 0],
+    ['Large emails', stats.largeEmails ?? 0]
   ].map(([label, count]) => `<div class="stat"><span>${label}</span><b>${count.toLocaleString()}</b></div>`).join('');
 }
 
