@@ -1,15 +1,18 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
+import 'dotenv/config';
+import cors from 'cors';
+import express from 'express';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const publicDir = path.join(__dirname, 'public');
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(publicDir));
 
 // Routes
 
@@ -175,7 +178,7 @@ app.get('/api/category/:categoryName', (req, res) => {
 // Mock API - Delete (trash) emails - Phase 1 just returns success
 app.post('/api/trash', (req, res) => {
   const { emailIds } = req.body;
-  if (!emailIds || emailIds.length === 0) {
+  if (!Array.isArray(emailIds) || emailIds.length === 0) {
     return res.status(400).json({ error: 'No emails specified' });
   }
 
@@ -188,7 +191,7 @@ app.post('/api/trash', (req, res) => {
 
 // Serve index.html for all other routes (SPA fallback)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(publicDir, 'index.html'));
 });
 
 // Start server
