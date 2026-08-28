@@ -41,11 +41,16 @@ $('senders').addEventListener('click', async (event) => {
   const sender = button.dataset.sender;
   try {
     const response = await fetch(`/api/sender/${encodeURIComponent(sender)}`);
+    if (!response.ok) throw new Error('Could not load sender emails');
     const data = await response.json();
     $('toast').textContent = `${data.totalCount.toLocaleString()} emails from ${sender}`;
     $('toast').classList.add('show');
     setTimeout(() => $('toast').classList.remove('show'), 2500);
-  } catch { $('toast').textContent = 'Could not load sender emails'; $('toast').classList.add('show'); }
+  } catch {
+    $('toast').textContent = 'Could not load sender emails';
+    $('toast').classList.add('show');
+    setTimeout(() => $('toast').classList.remove('show'), 2500);
+  }
 });
 
 load();
