@@ -19,13 +19,13 @@ function render(data) {
   const categories = data.categories ?? [];
   const stats = data.stats ?? {};
   $('summary').innerHTML = `
-    <div><strong>${data.totalEmails.toLocaleString()}</strong><small>Total emails</small></div>
-    <div><strong>${data.unreadEmails.toLocaleString()}</strong><small>Unread</small></div>`;
+    <div><strong>${(data.totalEmails ?? 0).toLocaleString()}</strong><small>Total emails</small></div>
+    <div><strong>${(data.unreadEmails ?? 0).toLocaleString()}</strong><small>Unread</small></div>`;
   $('senders').innerHTML = senders.map(({ sender, count }) => `
     <button class="card" data-sender="${escapeHtml(sender)}" type="button">
       <b>${escapeHtml(sender)}</b><span>${count.toLocaleString()} emails</span>
     </button>`).join('');
-  const maxCategory = Math.max(1, ...categories.map(({ count }) => count));
+  const maxCategory = Math.max(1, ...categories.map(({ count = 0 }) => count));
   $('categories').innerHTML = categories.map(({ name, count }) => `
     <div class="category"><b>${escapeHtml(name)}</b><div class="bar"><i style="width:${count / maxCategory * 100}%"></i></div><span>${count.toLocaleString()}</span></div>`).join('');
   $('stats').innerHTML = [
