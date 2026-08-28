@@ -1,0 +1,26 @@
+{
+  "name": "gmail-cleaner",
+  "version": "0.1.0",
+  "description": "Mobile-first Gmail Cleaner web application for iPhone",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "gmail",
+    "email",
+    "mobile",
+    "cleaner"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "dotenv": "^16.0.3"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
