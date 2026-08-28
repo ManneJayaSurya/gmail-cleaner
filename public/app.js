@@ -57,15 +57,8 @@ function render(data) {
   ].map(([label, count]) => `<div class="stat"><span>${label}</span><b>${count.toLocaleString()}</b></div>`).join('');
 }
 
-async function load() {
-  $('summary').innerHTML = '<div class="loading">Loading your inbox…</div>';
-  try { render(dashboardData); }
-  catch (error) {
-    $('summary').innerHTML = `<div class="loading">${escapeHtml(error.message)}</div>`;
-    $('senders').innerHTML = '';
-    $('categories').innerHTML = '';
-    $('stats').innerHTML = '';
-  }
+function load() {
+  render(dashboardData);
 }
 
 $('refresh').addEventListener('click', load);
