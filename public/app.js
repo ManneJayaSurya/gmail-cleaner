@@ -8,11 +8,32 @@ const showToast = (message) => {
   setTimeout(() => $('toast').classList.remove('show'), 2500);
 };
 
-async function getDashboard() {
-  const response = await fetch('/api/dashboard');
-  if (!response.ok) throw new Error('Unable to load dashboard');
-  return response.json();
-}
+const dashboardData = {
+  totalEmails: 12482,
+  unreadEmails: 1204,
+  topSenders: [
+    { sender: 'Amazon', count: 420 },
+    { sender: 'LinkedIn', count: 286 },
+    { sender: 'YouTube', count: 193 },
+    { sender: 'Google', count: 151 },
+    { sender: 'GitHub', count: 128 },
+    { sender: 'Medium', count: 95 },
+    { sender: 'Stripe', count: 87 },
+    { sender: 'Slack', count: 72 }
+  ],
+  categories: [
+    { name: 'Promotions', count: 3240 },
+    { name: 'Social', count: 1180 },
+    { name: 'Updates', count: 2410 },
+    { name: 'Primary', count: 5652 }
+  ],
+  stats: {
+    withAttachments: 342,
+    olderThan30Days: 8234,
+    olderThan90Days: 5123,
+    largeEmails: 156
+  }
+};
 
 function render(data) {
   const senders = data.topSenders ?? [];
@@ -36,15 +57,8 @@ function render(data) {
   ].map(([label, count]) => `<div class="stat"><span>${label}</span><b>${count.toLocaleString()}</b></div>`).join('');
 }
 
-async function load() {
-  $('summary').innerHTML = '<div class="loading">Loading your inbox…</div>';
-  try { render(await getDashboard()); }
-  catch (error) {
-    $('summary').innerHTML = `<div class="loading">${escapeHtml(error.message)}</div>`;
-    $('senders').innerHTML = '';
-    $('categories').innerHTML = '';
-    $('stats').innerHTML = '';
-  }
+function load() {
+  render(dashboardData);
 }
 
 $('refresh').addEventListener('click', load);
@@ -52,12 +66,8 @@ $('senders').addEventListener('click', async (event) => {
   const button = event.target.closest('[data-sender]');
   if (!button) return;
   const sender = decodeURIComponent(button.dataset.sender);
-  try {
-    const response = await fetch(`/api/sender/${encodeURIComponent(sender)}`);
-    if (!response.ok) throw new Error('Could not load sender emails');
-    const data = await response.json();
-    showToast(`${(data.totalCount ?? 0).toLocaleString()} emails from ${sender}`);
-  } catch (error) { showToast(error.message || 'Could not load sender emails'); }
+  const senderData = dashboardData.topSenders.find((item) => item.sender === sender);
+  showToast(`${(senderData?.count ?? 0).toLocaleString()} emails from ${sender}`);
 });
 
 load();
